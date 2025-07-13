@@ -1,27 +1,29 @@
 CC = gcc
 WARNINGS = -Wall -Wextra -Wsign-conversion -Wconversion
-CFLAGS = $(WARNINGS) -I$(INCLUDE_DIR)
+CFLAGS = $(WARNINGS)
+
+SERVER = http_server
+CLIENT = http_server
 
 SRC_DIR = ./src
-INCLUDE_DIR = ./include
 BUILD_DIR = ./build
 
-SOURCES = $(shell find $(SRC_DIR) -name "*.c")
-OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SOURCES))
+SERVER_SRC = $(SRC_DIR)/$(SERVER).c
+CLIENT_SRC = $(SRC_DIR)/$(CLIENT).c
 
-PROJ = http_server
-
-all: $(BUILD_DIR) $(BUILD_DIR)/$(PROJ)
+.PHONY: server client clean
+all: server client
+server: $(BUILD_DIR) $(BUILD_DIR)/$(SERVER)
+client: $(BUILD_DIR) $(BUILD_DIR)/$(CLIENT)
 
 $(BUILD_DIR):
 	mkdir -p $@
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+$(BUILD_DIR)/$(SERVER): $(SERVER_SRC)
+	$(CC) $(CFLAGS) $^ -o $@
 
-$(BUILD_DIR)/$(PROJ): $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o $@ $(LFLAGS)
+$(BUILD_DIR)/$(CLIENT): $(CLIENT_SRC)
+	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
 	rm -rf $(BUILD_DIR)
