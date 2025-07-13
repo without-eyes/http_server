@@ -3,7 +3,7 @@ WARNINGS = -Wall -Wextra -Wsign-conversion -Wconversion
 CFLAGS = $(WARNINGS)
 
 SERVER = http_server
-CLIENT = http_server
+CLIENT = http_client
 
 SRC_DIR = ./src
 BUILD_DIR = ./build
