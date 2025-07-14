@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include<unistd.h>
@@ -27,8 +28,11 @@ int main(void) {
 
     printf("%s\n", buff);
 
+    char* response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\nContent-Type: text/plain\r\n\r\nHello, world!\n";
+    send(client_socket, response, strlen(response), 0);
+
     free(buff);
-    close(fd);
     close(client_socket);
+    close(fd);
     return 0;
 }

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include<arpa/inet.h>
@@ -17,6 +18,12 @@ int main(void) {
     char buff[64] = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
     send(fd, buff, sizeof(buff), 0);
 
+    char* response = malloc(1024);
+    int recieved = recv(fd, response, 1024, 0);
+    response[recieved] = '\0';
+    printf("%s", response);
+
+    free(response);
     close(fd);
     return 0;
 }
