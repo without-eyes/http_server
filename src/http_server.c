@@ -17,22 +17,25 @@ int main(void) {
 
     listen(fd, SOMAXCONN);
 
-    struct sockaddr_in peer_addr;
-    socklen_t addr_len = sizeof(struct sockaddr_in);
-    int client_socket = accept(fd, (struct sockaddr*)&peer_addr, &addr_len);
+    while (1) {
+        struct sockaddr_in peer_addr;
+        socklen_t addr_len = sizeof(struct sockaddr_in);
+        int client_socket = accept(fd, (struct sockaddr*)&peer_addr, &addr_len);
 
-    size_t buff_len = 1024;
-    char* buff = malloc(buff_len);
-    ssize_t received = recv(client_socket, buff, buff_len, 0);
-    buff[received] = '\0';
+        size_t buff_len = 1024;
+        char* buff = malloc(buff_len);
+        ssize_t received = recv(client_socket, buff, buff_len, 0);
+        buff[received] = '\0';
 
-    printf("%s\n", buff);
+        printf("%s\n", buff);
 
-    char* response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\nContent-Type: text/plain\r\n\r\nHello, world!\n";
-    send(client_socket, response, strlen(response), 0);
+        char* response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\nContent-Type: text/plain\r\n\r\nHello, world!\n";
+        send(client_socket, response, strlen(response), 0);
 
-    free(buff);
-    close(client_socket);
+        free(buff);
+        close(client_socket);
+    }
+
     close(fd);
     return 0;
 }
