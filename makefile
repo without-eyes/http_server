@@ -2,13 +2,13 @@ CC = gcc
 WARNINGS = -Wall -Wextra -Wsign-conversion -Wconversion
 CFLAGS = $(WARNINGS)
 
-SERVER = http_server
+SERVER = server
 CLIENT = http_client
 
 SRC_DIR = ./src
 BUILD_DIR = ./build
 
-SERVER_SRC = $(SRC_DIR)/$(SERVER).c
+SERVER_SRC = $(shell find $(SRC_DIR)/$(SERVER) -name "*.c")
 CLIENT_SRC = $(SRC_DIR)/$(CLIENT).c
 
 .PHONY: server client clean
