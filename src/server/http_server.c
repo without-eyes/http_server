@@ -26,21 +26,36 @@ void handle_requests(int fileDescriptor) {
     listen(fileDescriptor, SOMAXCONN);
 
     while (1) {
-        struct sockaddr_in peer_addr;
-        socklen_t addr_len = sizeof(struct sockaddr_in);
-        int client_socket = accept(fileDescriptor, (struct sockaddr*)&peer_addr, &addr_len);
+        int clientSocket = accept_connection(fileDescriptor);
+        if (clientSocket == -1) break;
 
-        size_t buff_len = 1024;
-        char* buff = malloc(buff_len);
-        ssize_t received = recv(client_socket, buff, buff_len, 0);
-        buff[received] = '\0';
+        receive_and_print_request(clientSocket);
+        send_response(clientSocket);
 
-        printf("%s\n", buff);
-
-        char* response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\nContent-Type: text/plain\r\n\r\nHello, world!\n";
-        send(client_socket, response, strlen(response), 0);
-
-        free(buff);
-        close(client_socket);
+        close(clientSocket);
     }
+}
+
+int accept_connection(int fileDescriptor) {
+    struct sockaddr_in peerAddress;
+    socklen_t addressLength = sizeof(struct sockaddr_in);
+    int clientSocket = accept(fileDescriptor, (struct sockaddr*)&peerAddress, &addressLength);
+
+    if (clientSocket == -1) {
+        perror("Could not accept connection");
+    }
+
+    return clientSocket;
+}
+
+void receive_and_print_request(int clientSocket) {
+    char request[512];
+    ssize_t received = recv(clientSocket, request, sizeof(request), 0);
+    request[received] = '\0';
+    printf("%s", request);
+}
+
+void send_response(int clientSocket) {
+    char* response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\nContent-Type: text/plain\r\n\r\nHello, world!\n";
+    send(clientSocket, response, strlen(response), 0);
 }
