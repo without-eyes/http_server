@@ -3,13 +3,13 @@ WARNINGS = -Wall -Wextra -Wsign-conversion -Wconversion
 CFLAGS = $(WARNINGS)
 
 SERVER = server
-CLIENT = http_client
+CLIENT = client
 
 SRC_DIR = ./src
 BUILD_DIR = ./build
 
 SERVER_SRC = $(shell find $(SRC_DIR)/$(SERVER) -name "*.c")
-CLIENT_SRC = $(SRC_DIR)/$(CLIENT).c
+CLIENT_SRC = $(shell find $(SRC_DIR)/$(CLIENT) -name "*.c")
 
 .PHONY: server client clean
 all: server client
