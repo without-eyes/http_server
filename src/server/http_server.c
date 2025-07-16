@@ -78,7 +78,7 @@ void receive_and_print_request(int clientSocket) {
 }
 
 void send_response(int clientSocket) {
-    char* page = get_html_page("/index");
+    char* page = get_html_page("/index.html");
     size_t responseLength = strlen(page) + 256;
     char* response = malloc(responseLength);
     snprintf(response, responseLength, "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\nContent-Type: text/plain\r\n\r\n%s\n", strlen(page), page);
@@ -91,7 +91,7 @@ void send_response(int clientSocket) {
 
 char* get_html_page(const char* name) {
     char path[256];
-    snprintf(path, sizeof(path), "./html%s.html", name);
+    snprintf(path, sizeof(path), "./html%s", name);
     FILE* file = fopen(path, "r");
 
     if (file == NULL) {

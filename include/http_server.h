@@ -21,4 +21,6 @@ void send_response(int clientSocket);
 
 char* get_html_page(const char* name);
 
+
+
 #endif //HTTP_SERVER_H
