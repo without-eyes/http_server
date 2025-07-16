@@ -19,4 +19,6 @@ void receive_and_print_request(int clientSocket);
 
 void send_response(int clientSocket);
 
+char* get_html_page(const char* name);
+
 #endif //HTTP_SERVER_H

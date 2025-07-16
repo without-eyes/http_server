@@ -78,8 +78,35 @@ void receive_and_print_request(int clientSocket) {
 }
 
 void send_response(int clientSocket) {
-    char* response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\nContent-Type: text/plain\r\n\r\nHello, world!\n";
+    char* page = get_html_page("/index");
+    size_t responseLength = strlen(page) + 256;
+    char* response = malloc(responseLength);
+    snprintf(response, responseLength, "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\nContent-Type: text/plain\r\n\r\n%s\n", strlen(page), page);
     if (send(clientSocket, response, strlen(response), 0) == -1) {
         perror("Could not send response");
     }
+    free(response);
+}
+
+char* get_html_page(const char* name) {
+    char path[256];
+    snprintf(path, sizeof(path), "./html%s.html", name);
+    FILE* file = fopen(path, "r");
+
+    if (file == NULL) {
+        perror("Could not open file");
+        // send 404
+        exit(EXIT_FAILURE);
+    }
+
+    fseek(file, 0, SEEK_END);
+    const size_t length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    char* content = malloc(length + 1);
+    fread(content, 1, length, file);
+    content[length] = '\0';
+
+    fclose(file);
+    return content;
 }

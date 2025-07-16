@@ -8,7 +8,7 @@ int main(void) {
     struct sockaddr_in serverAddress = create_server_address();
     connect_to_server(fileDescriptor, serverAddress);
 
-    char request[] = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
+    char request[] = "GET /index HTTP/1.1\r\nHost: localhost\r\n\r\n";
     send_request(fileDescriptor, request, strlen(request));
     receive_and_print_response(fileDescriptor);
 
