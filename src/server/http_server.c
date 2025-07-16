@@ -85,6 +85,7 @@ void send_response(int clientSocket) {
     if (send(clientSocket, response, strlen(response), 0) == -1) {
         perror("Could not send response");
     }
+    free(page);
     free(response);
 }
 
