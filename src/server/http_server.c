@@ -39,9 +39,12 @@ void handle_requests(int fileDescriptor) {
         int clientSocket = accept_connection(fileDescriptor);
         if (clientSocket == -1) break;
 
-        receive_and_print_request(clientSocket);
-        send_response(clientSocket);
+        char* request = receive_request(clientSocket);
+        struct Request parsedRequest = parse_request(request);
 
+        send_response(clientSocket, parsedRequest);
+
+        free(request);
         close(clientSocket);
     }
 }
@@ -66,19 +69,23 @@ int accept_connection(int fileDescriptor) {
     return clientSocket;
 }
 
-void receive_and_print_request(int clientSocket) {
-    char request[512];
-    ssize_t received = recv(clientSocket, request, sizeof(request), 0);
+char* receive_request(int clientSocket) {
+    char* request = malloc(256);
+    ssize_t received = recv(clientSocket, request, 256, 0);
     if (received == -1) {
         perror("Could not receive request");
-        return;
+        return NULL;
     }
     request[received] = '\0';
-    printf("%s", request);
+    return request;
 }
 
-void send_response(int clientSocket) {
-    char* page = get_html_page("/index.html");
+void send_response(int clientSocket, struct Request parsedRequest) {
+    if (strcmp(parsedRequest.method, "GET") != 0) {
+        return;
+    }
+
+    char* page = get_html_page(parsedRequest.path);
     size_t responseLength = strlen(page) + 256;
     char* response = malloc(responseLength);
     snprintf(response, responseLength, "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\nContent-Type: text/plain\r\n\r\n%s\n", strlen(page), page);
@@ -110,4 +117,24 @@ char* get_html_page(const char* name) {
 
     fclose(file);
     return content;
+}
+
+struct Request parse_request(char* request) {
+    if (request == NULL) {
+        perror("Could not parse request");
+        exit(EXIT_FAILURE);
+    }
+
+    struct Request parsedRequest;
+
+    char* field = strtok(request, " ");
+    parsedRequest.method = field;
+
+    field = strtok(NULL, " ");
+    parsedRequest.path = field;
+
+    field = strtok(NULL, " ");
+    parsedRequest.htmlVersion = field;\
+
+    return parsedRequest;
 }

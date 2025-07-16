@@ -3,6 +3,12 @@
 
 #include <netinet/in.h>
 
+struct Request {
+    char* method;
+    char* path;
+    char* htmlVersion;
+};
+
 int create_file_descriptor();
 
 struct sockaddr_in create_server_address();
@@ -15,12 +21,12 @@ void start_listening(int fileDescriptor);
 
 int accept_connection(int fileDescriptor);
 
-void receive_and_print_request(int clientSocket);
+char* receive_request(int clientSocket);
 
-void send_response(int clientSocket);
+void send_response(int clientSocket, struct Request parsedRequest);
 
 char* get_html_page(const char* name);
 
-
+struct Request parse_request(char* request);
 
 #endif //HTTP_SERVER_H
