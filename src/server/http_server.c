@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 #include <sys/socket.h>
 
 int create_file_descriptor() {
@@ -65,6 +66,8 @@ int accept_connection(int fileDescriptor) {
     if (clientSocket == -1) {
         perror("Could not accept connection");
     }
+
+    print_connected_client_ip(peerAddress);
 
     return clientSocket;
 }
@@ -136,4 +139,10 @@ struct Request parse_request(char* request) {
     parsedRequest.htmlVersion = field;\
 
     return parsedRequest;
+}
+
+void print_connected_client_ip(struct sockaddr_in address) {
+    char clientIp[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(address.sin_addr), clientIp, INET_ADDRSTRLEN);
+    printf("Client connected: %s\n", clientIp);
 }
