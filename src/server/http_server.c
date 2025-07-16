@@ -103,8 +103,7 @@ char* get_html_page(const char* name) {
 
     if (file == NULL) {
         perror("Could not open file");
-        // send 404
-        exit(EXIT_FAILURE);
+        file = fopen("./html/404.html", "r");
     }
 
     fseek(file, 0, SEEK_END);
