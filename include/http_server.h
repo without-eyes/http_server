@@ -31,4 +31,6 @@ struct Request parse_request(char* request);
 
 void print_connected_client_ip(struct sockaddr_in address);
 
+void handle_client(int clientSocket);
+
 #endif //HTTP_SERVER_H

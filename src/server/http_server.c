@@ -40,13 +40,7 @@ void handle_requests(int fileDescriptor) {
         int clientSocket = accept_connection(fileDescriptor);
         if (clientSocket == -1) break;
 
-        char* request = receive_request(clientSocket);
-        struct Request parsedRequest = parse_request(request);
-
-        send_response(clientSocket, parsedRequest);
-
-        free(request);
-        close(clientSocket);
+        handle_client(clientSocket);
     }
 }
 
@@ -122,11 +116,6 @@ char* get_html_page(const char* name) {
 }
 
 struct Request parse_request(char* request) {
-    if (request == NULL) {
-        perror("Could not parse request");
-        exit(EXIT_FAILURE);
-    }
-
     struct Request parsedRequest;
 
     char* field = strtok(request, " ");
@@ -136,7 +125,7 @@ struct Request parse_request(char* request) {
     parsedRequest.path = field;
 
     field = strtok(NULL, " ");
-    parsedRequest.htmlVersion = field;\
+    parsedRequest.htmlVersion = field;
 
     return parsedRequest;
 }
@@ -145,4 +134,18 @@ void print_connected_client_ip(struct sockaddr_in address) {
     char clientIp[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(address.sin_addr), clientIp, INET_ADDRSTRLEN);
     printf("Client connected: %s\n", clientIp);
+}
+
+void handle_client(int clientSocket) {
+    while (1) {
+        char* request = receive_request(clientSocket);
+        if (request == NULL) break;
+        struct Request parsedRequest = parse_request(request);
+
+        send_response(clientSocket, parsedRequest);
+
+        free(request);
+    }
+
+    close(clientSocket);
 }
